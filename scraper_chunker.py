@@ -49,54 +49,54 @@ medical_conditions = []
 common_medicines = []
 
 
-# # get list of urls for common medical conditions on NHS website
-# request = requests.get('https://www.nhs.uk/conditions/')
-# soup = BeautifulSoup(request.content, 'html.parser')   
-# urls = [f"https://www.nhs.uk{url['href']}" for url in soup.find_all('a') if '/conditions/' in url['href'] and ' see ' not in url.text]
-# urls = [url for url in urls if url != 'https://www.nhs.uk/conditions/']
-# urls = [url for url in urls if '#' not in url]
-# urls = [url for url in urls if 'care-and-support-guide' not in url]
+# get list of urls for common medical conditions on NHS website
+request = requests.get('https://www.nhs.uk/conditions/')
+soup = BeautifulSoup(request.content, 'html.parser')   
+urls = [f"https://www.nhs.uk{url['href']}" for url in soup.find_all('a') if '/conditions/' in url['href'] and ' see ' not in url.text]
+urls = [url for url in urls if url != 'https://www.nhs.uk/conditions/']
+urls = [url for url in urls if '#' not in url]
+urls = [url for url in urls if 'care-and-support-guide' not in url]
 
-# for url in urls:
-#     req = request_html(url)
-#     soup = BeautifulSoup(req.content, 'html.parser')
+for url in urls:
+    req = request_html(url)
+    soup = BeautifulSoup(req.content, 'html.parser')
 
-#     # detect extended pages
-#     child_urls = [f"https://www.nhs.uk{url['href']}" for url in soup.select('.nhsuk-contents-list__item a') if 'conditions' in url['href']]
+    # detect extended pages
+    child_urls = [f"https://www.nhs.uk{url['href']}" for url in soup.select('.nhsuk-contents-list__item a') if 'conditions' in url['href']]
 
-#     if child_urls:
-#         # scrape child pages and the overview
-#         child_urls.append(url)
-#         for url in child_urls:
-#             req = request_html(url)
-#             soup = BeautifulSoup(req.content, 'html.parser')
-#             soup = paragraph_snipper(soup)
-#             soup = soup.find('article')
-#             for section in soup.find_all('section'):
-#                 text = section.get_text(separator=' ', strip=True)
-#                 print(text)
-#                 print()
-#                 output = text.split('_*SNIP*_')
-#                 output = [sentence.replace(u'\xa0', ' ') for sentence in output]
-#                 medical_conditions.extend(output)   
-#     else:
-#         # scrape short page
-#         soup = paragraph_snipper(soup)
-#         soup = soup.find('article')
-#         for section in soup.find_all('section'):
-#             text = section.get_text(separator=' ', strip=True)
-#             print(text)
-#             print()
-#             output = text.split('_*SNIP*_')
-#             output = [sentence.replace(u'\xa0', ' ') for sentence in output]
-#             medical_conditions.extend(output)
+    if child_urls:
+        # scrape child pages and the overview
+        child_urls.append(url)
+        for url in child_urls:
+            req = request_html(url)
+            soup = BeautifulSoup(req.content, 'html.parser')
+            soup = paragraph_snipper(soup)
+            soup = soup.find('article')
+            for section in soup.find_all('section'):
+                text = section.get_text(separator=' ', strip=True)
+                print(text)
+                print()
+                output = text.split('_*SNIP*_')
+                output = [sentence.replace(u'\xa0', ' ') for sentence in output]
+                medical_conditions.extend(output)   
+    else:
+        # scrape short page
+        soup = paragraph_snipper(soup)
+        soup = soup.find('article')
+        for section in soup.find_all('section'):
+            text = section.get_text(separator=' ', strip=True)
+            print(text)
+            print()
+            output = text.split('_*SNIP*_')
+            output = [sentence.replace(u'\xa0', ' ') for sentence in output]
+            medical_conditions.extend(output)
 
-#     sleep(0.25)        
+    sleep(0.25)        
 
-# medical_conditions = clean_corpus(medical_conditions)
+medical_conditions = clean_corpus(medical_conditions)
 
-# with open('medical_conditions3.pickle', 'wb') as file:
-#     pickle.dump(medical_conditions, file, protocol=4)
+with open('medical_conditions3.pickle', 'wb') as file:
+    pickle.dump(medical_conditions, file, protocol=4)
 
 
 # get list of urls for common medicines on NHS website
